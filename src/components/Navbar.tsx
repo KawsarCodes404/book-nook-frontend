@@ -117,6 +117,7 @@ function Navbar({ className }: { className?: string }) {
                 href={link.href}
                 className={cn(
                   "text-sm transition-colors hover:text-brand",
+                  
                   link.emphasis && "font-semibold"
                 )}
               >
