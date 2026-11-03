@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { FormEvent } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
-import { BookImage } from "@/components/BookImage"
-import type { Book } from "@/lib/books"
-import { getTokenFromClient } from "@/lib/getTokenFromClient"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { BookImage } from "@/components/BookImage";
+import type { Book } from "@/lib/books";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,25 +28,25 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { toast, Toaster } from "@/components/ui/toast"
+} from "@/components/ui/alert-dialog";
+import { toast, Toaster } from "@/components/ui/toast";
 
-const categories = ["Fiction", "Science", "History", "Kids", "Others"]
+const categories = ["Fiction", "Science", "History", "Kids", "Others"];
 
 export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [books, setBooks] = useState(initialBooks)
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null)
-  const [bookToDelete, setBookToDelete] = useState<Book | null>(null)
-  const [message, setMessage] = useState("")
+  const [books, setBooks] = useState(initialBooks);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+  const [message, setMessage] = useState("");
 
   const handleUpdateBook = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    if (!selectedBook) return
+    if (!selectedBook) return;
 
-    const formData = new FormData(event.currentTarget)
+    const formData = new FormData(event.currentTarget);
 
     const updatedDetails = {
       title: String(formData.get("title")),
@@ -55,10 +55,10 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
       image: String(formData.get("image")),
       description: String(formData.get("description")),
       totalCopies: Number(formData.get("totalCopies")),
-    }
+    };
 
     try {
-      const token = await getTokenFromClient()
+      const token = await getTokenFromClient();
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/books/${selectedBook._id}`,
@@ -70,15 +70,16 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
           },
           body: JSON.stringify(updatedDetails),
         },
-      )
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Could not update this book.")
+        throw new Error(result.message || "Could not update this book.");
       }
 
-      const borrowedCopies = selectedBook.totalCopies - selectedBook.availableCopies
+      const borrowedCopies =
+        selectedBook.totalCopies - selectedBook.availableCopies;
 
       setBooks((currentBooks) =>
         currentBooks.map((book) =>
@@ -90,34 +91,34 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
               }
             : book,
         ),
-      )
-      setSelectedBook(null)
-      setMessage("Book details updated.")
+      );
+      setSelectedBook(null);
+      setMessage("Book details updated.");
 
       toast.add({
         type: "success",
         title: "Book updated",
         description: "Your changes have been saved.",
-      })
+      });
     } catch (error) {
       const errorText =
-        error instanceof Error ? error.message : "Could not update this book."
+        error instanceof Error ? error.message : "Could not update this book.";
 
-      setMessage(errorText)
+      setMessage(errorText);
 
       toast.add({
         type: "error",
         title: "Update failed",
         description: errorText,
-      })
+      });
     }
-  }
+  };
 
   const handleDeleteBook = async () => {
-    if (!bookToDelete) return
+    if (!bookToDelete) return;
 
     try {
-      const token = await getTokenFromClient()
+      const token = await getTokenFromClient();
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/books/${bookToDelete._id}`,
@@ -127,39 +128,39 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
             authorization: `Bearer ${token}`,
           },
         },
-      )
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Could not delete this book.")
+        throw new Error(result.message || "Could not delete this book.");
       }
 
       setBooks((currentBooks) =>
         currentBooks.filter((book) => book._id !== bookToDelete._id),
-      )
-      setMessage("Book removed from your shelf.")
+      );
+      setMessage("Book removed from your shelf.");
 
       toast.add({
         type: "success",
         title: "Book removed",
         description: "The book was removed from your shelf.",
-      })
+      });
     } catch (error) {
       const errorText =
-        error instanceof Error ? error.message : "Could not delete this book."
+        error instanceof Error ? error.message : "Could not delete this book.";
 
-      setMessage(errorText)
+      setMessage(errorText);
 
       toast.add({
         type: "error",
         title: "Delete failed",
         description: errorText,
-      })
+      });
     } finally {
-      setBookToDelete(null)
+      setBookToDelete(null);
     }
-  }
+  };
 
   return (
     <>
@@ -168,26 +169,26 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
       {message && (
         <p
           role="status"
-          className="mb-4 rounded-md border border-[#34453b] bg-[#142019] px-4 py-3 text-sm"
+          className="mb-4 rounded-md border border-book-border-strong bg-book-surface px-4 py-3 text-sm"
         >
           {message}
         </p>
       )}
 
       {books.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-[#34453b] p-12 text-center">
+        <div className="rounded-lg border border-dashed border-book-border-strong p-12 text-center">
           <p>Your shelf is empty for now.</p>
           <Button
-            className="mt-4 bg-[#91cda3] text-[#102016]"
+            className="mt-4 bg-book-accent text-book-accent-ink"
             onClick={() => router.push("/add-book")}
           >
             Add your first book
           </Button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-[#29372f]">
+        <div className="overflow-x-auto rounded-lg border border-book-border">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-[#142019] text-[#9eaba2]">
+            <thead className="bg-book-surface text-book-muted">
               <tr>
                 <th className="p-3">Book</th>
                 <th className="p-3">Category</th>
@@ -198,7 +199,7 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
 
             <tbody>
               {books.map((book) => (
-                <tr key={book._id} className="border-t border-[#29372f]">
+                <tr key={book._id} className="border-t border-book-border">
                   <td className="p-3">
                     <div className="flex items-center gap-3">
                       <div className="relative size-12 shrink-0 overflow-hidden rounded">
@@ -211,7 +212,7 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
                       </div>
                       <div>
                         <p className="font-medium">{book.title}</p>
-                        <p className="text-xs text-[#9eaba2]">{book.author}</p>
+                        <p className="text-xs text-book-muted">{book.author}</p>
                       </div>
                     </div>
                   </td>
@@ -249,13 +250,13 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
       <Dialog
         open={Boolean(selectedBook)}
         onOpenChange={(open) => {
-          if (!open) setSelectedBook(null)
+          if (!open) setSelectedBook(null);
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto border border-[#34453b] bg-[#142019] text-[#e5eee8] sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto border border-book-border-strong bg-book-surface text-book-text sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">Edit Book</DialogTitle>
-            <DialogDescription className="text-[#9eaba2]">
+            <DialogDescription className="text-book-muted">
               Update the details shown on the library shelf.
             </DialogDescription>
           </DialogHeader>
@@ -346,7 +347,7 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
             <Button
               type="submit"
               form="edit-book-form"
-              className="bg-[#91cda3] text-[#102016]"
+              className="bg-book-accent text-book-accent-ink"
             >
               Save Changes
             </Button>
@@ -357,13 +358,13 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
       <AlertDialog
         open={Boolean(bookToDelete)}
         onOpenChange={(open) => {
-          if (!open) setBookToDelete(null)
+          if (!open) setBookToDelete(null);
         }}
       >
-        <AlertDialogContent className="border border-[#34453b] bg-[#142019] text-[#e5eee8]">
+        <AlertDialogContent className="border border-book-border-strong bg-book-surface text-book-text">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this book?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#9eaba2]">
+            <AlertDialogDescription className="text-book-muted">
               “{bookToDelete?.title}” will be removed from the library.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -372,7 +373,7 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteBook}
-              className="bg-red-700 text-white hover:bg-red-600"
+              className="bg-red-700 text-book-text hover:bg-red-600"
             >
               Delete Book
             </AlertDialogAction>
@@ -380,5 +381,5 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

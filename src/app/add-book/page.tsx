@@ -1,43 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
+import { PenLine } from "lucide-react";
 
-import { authClient } from "@/lib/auth-client"
-import { getTokenFromClient } from "@/lib/getTokenFromClient"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { toast, Toaster } from "@/components/ui/toast"
+import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast, Toaster } from "@/components/ui/toast";
 
-const categories = ["Fiction", "Science", "History", "Kids", "Others"]
+const categories = ["Fiction", "Science", "History", "Kids", "Others"];
 
-const inputClass = "border-[#34453b] bg-[#142019] text-white"
+const inputClass = "border-book-border-strong bg-book-surface text-book-text";
 
 export default function AddBookPage() {
-  const { data: session } = authClient.useSession()
+  const { data: session } = authClient.useSession();
 
-  const [imageUrl, setImageUrl] = useState("")
-  const [isUploading, setIsUploading] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [message, setMessage] = useState("")
+  const [imageUrl, setImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
 
   const uploadBookImage = async (file: File) => {
-    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
     if (!apiKey) {
       setMessage(
         "Image upload needs NEXT_PUBLIC_IMGBB_API_KEY. You can paste a hosted image URL below instead.",
-      )
-      return
+      );
+      return;
     }
 
-    setIsUploading(true)
-    setMessage("")
+    setIsUploading(true);
+    setMessage("");
 
     try {
-      const formData = new FormData()
-      formData.set("image", file)
+      const formData = new FormData();
+      formData.set("image", file);
 
       const response = await fetch(
         `https://api.imgbb.com/1/upload?key=${apiKey}`,
@@ -45,42 +46,42 @@ export default function AddBookPage() {
           method: "POST",
           body: formData,
         },
-      )
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error?.message || "Image upload failed.")
+        throw new Error(result.error?.message || "Image upload failed.");
       }
 
-      setImageUrl(result.data.url)
+      setImageUrl(result.data.url);
     } catch (error) {
       const errorText =
-        error instanceof Error ? error.message : "Image upload failed."
+        error instanceof Error ? error.message : "Image upload failed.";
 
-      setMessage(errorText)
+      setMessage(errorText);
 
       toast.add({
         type: "error",
         title: "Image upload failed",
         description: errorText,
-      })
+      });
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   const handleAddBook = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setMessage("")
+    event.preventDefault();
+    setMessage("");
 
-    const form = event.currentTarget
-    const formData = new FormData(form)
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const token = await getTokenFromClient()
+      const token = await getTokenFromClient();
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
         method: "POST",
@@ -96,73 +97,70 @@ export default function AddBookPage() {
           description: formData.get("description"),
           totalCopies: formData.get("totalCopies"),
         }),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Could not add this book.")
+        throw new Error(result.message || "Could not add this book.");
       }
 
-      setMessage("Book added to the library.")
+      setMessage("Book added to the library.");
 
       toast.add({
         type: "success",
         title: "Book added",
         description: "Your book is now on the library shelf.",
-      })
+      });
 
-      form.reset()
-      setImageUrl("")
+      form.reset();
+      setImageUrl("");
     } catch (error) {
       const errorText =
-        error instanceof Error ? error.message : "Could not add this book."
+        error instanceof Error ? error.message : "Could not add this book.";
 
-      setMessage(errorText)
+      setMessage(errorText);
 
       toast.add({
         type: "error",
         title: "Could not add book",
         description: errorText,
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <main className="flex-1 bg-[#0b130f] text-[#e5eee8]">
+    <main className="flex-1 bg-book-page text-book-text">
       <Toaster />
 
-      <section className="border-b border-[#29372f] bg-[#142019] px-6 py-10 text-center">
-        <h1 className="font-serif text-4xl font-bold">Add a Book</h1>
-        <p className="mt-2 text-sm text-[#9eaba2]">
+      <section className="relative isolate overflow-hidden border-b border-book-border bg-book-surface px-6 py-10 text-center">
+        <div aria-hidden="true" className="booknook-header-glow pointer-events-none absolute -right-20 -top-28 -z-10 size-80 rounded-full" />
+        <p className="mb-2 text-[11px] font-semibold tracking-[0.24em] text-book-accent-text">PASS IT ON</p>
+        <h1 className="flex items-center justify-center gap-3 font-serif text-4xl font-bold">
+          Add a Book
+          <span className="flex size-10 items-center justify-center rounded-xl border border-book-border bg-book-page text-book-accent-text shadow-sm">
+            <PenLine className="booknook-pen-icon size-5" />
+          </span>
+        </h1>
+        <p className="mt-2 text-sm text-book-muted">
           Put a book from your shelf into the library.
         </p>
       </section>
 
       <form
         onSubmit={handleAddBook}
-        className="mx-auto grid max-w-3xl gap-5 px-6 py-10 sm:grid-cols-2"
+        className="booknook-form-shell mx-auto my-10 grid max-w-3xl gap-5 rounded-2xl border border-book-border bg-book-surface p-6 shadow-[0_24px_70px_-42px_rgba(63,33,29,0.45)] sm:grid-cols-2 sm:p-8"
       >
         <div className="grid gap-2">
           <Label htmlFor="title">Book Title</Label>
-          <Input
-            id="title"
-            name="title"
-            required
-            className={inputClass}
-          />
+          <Input id="title" name="title" required className={inputClass} />
         </div>
 
         <div className="grid gap-2">
           <Label htmlFor="author">Author Name</Label>
-          <Input
-            id="author"
-            name="author"
-            required
-            className={inputClass}
-          />
+          <Input id="author" name="author" required className={inputClass} />
         </div>
 
         <div className="grid gap-2">
@@ -172,7 +170,7 @@ export default function AddBookPage() {
             name="category"
             required
             defaultValue="Fiction"
-            className="h-9 rounded-md border border-[#34453b] bg-[#142019] px-3 text-sm"
+            className="h-9 rounded-md border border-book-border-strong bg-book-surface px-3 text-sm"
           >
             {categories.map((category) => (
               <option key={category}>{category}</option>
@@ -200,12 +198,12 @@ export default function AddBookPage() {
             type="file"
             accept="image/*"
             onChange={(event) => {
-              const file = event.target.files?.[0]
-              if (file) void uploadBookImage(file)
+              const file = event.target.files?.[0];
+              if (file) void uploadBookImage(file);
             }}
             className={inputClass}
           />
-          <p className="text-xs text-[#9eaba2]">
+          <p className="text-xs text-book-muted">
             {isUploading
               ? "Uploading image…"
               : imageUrl
@@ -265,11 +263,11 @@ export default function AddBookPage() {
         <Button
           type="submit"
           disabled={isSubmitting || isUploading}
-          className="bg-[#91cda3] text-[#102016] hover:bg-[#a2d9b2] sm:col-span-2"
+          className="booknook-action bg-book-accent text-book-accent-ink hover:bg-book-accent-hover sm:col-span-2"
         >
           {isSubmitting ? "Adding Book…" : "Add Book"}
         </Button>
       </form>
     </main>
-  )
+  );
 }

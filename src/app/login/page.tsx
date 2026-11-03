@@ -1,25 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { authClient } from "@/lib/auth-client"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 function GoogleIcon() {
   return (
@@ -41,63 +36,69 @@ function GoogleIcon() {
         d="M24 12c3 0 5.7 1 7.8 3.1l5.9-5.9C34.1 6 29.5 4 24 4A20 20 0 0 0 5.9 15l6.9 5.2C14.4 15.5 18.8 12 24 12Z"
       />
     </svg>
-  )
+  );
 }
 
 function getSafeCallbackUrl() {
-  const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl")
+  const callbackUrl = new URLSearchParams(window.location.search).get(
+    "callbackUrl",
+  );
 
   if (callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")) {
-    return callbackUrl
+    return callbackUrl;
   }
 
-  return "/"
+  return "/";
 }
 
 export default function SignInPage() {
-  const router = useRouter()
-  const [errorMessage, setErrorMessage] = useState("")
+  const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleEmailLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setErrorMessage("")
+    event.preventDefault();
+    setErrorMessage("");
 
-    const formData = new FormData(event.currentTarget)
-    const callbackUrl = getSafeCallbackUrl()
+    const formData = new FormData(event.currentTarget);
+    const callbackUrl = getSafeCallbackUrl();
 
     const { error } = await authClient.signIn.email({
       email: String(formData.get("email")),
       password: String(formData.get("password")),
       callbackURL: callbackUrl,
-    })
+    });
 
     if (error) {
-      setErrorMessage(error.message ?? "Sign in failed. Please check your details.")
-      return
+      setErrorMessage(
+        error.message ?? "Sign in failed. Please check your details.",
+      );
+      return;
     }
 
-    router.replace(callbackUrl)
-    router.refresh()
-  }
+    router.replace(callbackUrl);
+    router.refresh();
+  };
 
   const handleGoogleSignIn = async () => {
-    setErrorMessage("")
+    setErrorMessage("");
 
-    const callbackUrl = getSafeCallbackUrl()
+    const callbackUrl = getSafeCallbackUrl();
     const { error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: callbackUrl,
       errorCallbackURL: `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`,
-    })
+    });
 
     if (error) {
-      setErrorMessage(error.message ?? "Google sign in failed. Please try again.")
+      setErrorMessage(
+        error.message ?? "Google sign in failed. Please try again.",
+      );
     }
-  }
+  };
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-[#0b130f] px-4 py-12 text-[#e5eee8]">
-      <Card className="w-full max-w-md border border-[#29372f] bg-[#142019] text-[#e5eee8] shadow-2xl shadow-black/20">
+    <main className="flex flex-1 items-center justify-center bg-book-page px-4 py-12 text-book-text">
+      <Card className="w-full max-w-md border border-book-border bg-book-surface text-book-text shadow-2xl shadow-black/20">
         <CardHeader className="pb-6 text-center">
           <CardTitle className="font-serif text-3xl">Login</CardTitle>
         </CardHeader>
@@ -113,14 +114,14 @@ export default function SignInPage() {
                   name="email"
                   autoComplete="email"
                   required
-                  className="border-[#34453b] bg-[#1c2a22] text-white"
+                  className="border-book-border-strong bg-book-input text-book-text"
                 />
               </Field>
 
               <Field>
                 <div className="flex items-center justify-between">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <span className="text-xs text-[#91c5a5]">
+                  <span className="text-xs text-book-accent-text">
                     Forgot Password?
                   </span>
                 </div>
@@ -130,7 +131,7 @@ export default function SignInPage() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="border-[#34453b] bg-[#1c2a22] text-white"
+                  className="border-book-border-strong bg-book-input text-book-text"
                 />
               </Field>
 
@@ -142,12 +143,12 @@ export default function SignInPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-[#91cda3] text-[#102016] hover:bg-[#a2d9b2]"
+                className="w-full bg-book-accent text-book-accent-ink hover:bg-book-accent-hover"
               >
                 Login
               </Button>
 
-              <FieldSeparator className="text-[#99a79e] [&_[data-slot=field-separator-content]]:bg-[#142019]">
+              <FieldSeparator className="text-book-muted [&_[data-slot=field-separator-content]]:bg-book-surface">
                 OR
               </FieldSeparator>
 
@@ -155,25 +156,25 @@ export default function SignInPage() {
                 type="button"
                 variant="outline"
                 onClick={handleGoogleSignIn}
-                className="w-full border-[#34453b] bg-[#1c2a22] text-[#e5eee8] hover:bg-[#26372c]"
+                className="w-full border-book-border-strong bg-book-input text-book-text hover:bg-book-hover"
               >
                 <GoogleIcon />
                 Continue with Google
               </Button>
 
-              <FieldDescription className="pt-2 text-center text-[#aab6ae]">
+              <FieldDescription className="pt-2 text-center text-book-muted">
                 New here?{" "}
                 <Link
-                  className="text-[#91c5a5] hover:underline"
+                  className="text-book-accent-text hover:underline"
                   href="/register"
                   onClick={(event) => {
-                    const callbackUrl = getSafeCallbackUrl()
+                    const callbackUrl = getSafeCallbackUrl();
 
                     if (callbackUrl !== "/") {
-                      event.preventDefault()
+                      event.preventDefault();
                       router.push(
                         `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`,
-                      )
+                      );
                     }
                   }}
                 >
@@ -185,5 +186,5 @@ export default function SignInPage() {
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }

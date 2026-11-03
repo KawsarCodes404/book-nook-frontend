@@ -1,32 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
-import { BookImage } from "@/components/BookImage"
-import type { Borrow } from "@/lib/books"
-import { getTokenFromClient } from "@/lib/getTokenFromClient"
-import { Button } from "@/components/ui/button"
-import { toast, Toaster } from "@/components/ui/toast"
+import { BookImage } from "@/components/BookImage";
+import type { Borrow } from "@/lib/books";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { Button } from "@/components/ui/button";
+import { toast, Toaster } from "@/components/ui/toast";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).format(new Date(value))
+  }).format(new Date(value));
 }
 
-export function MyBorrowsList({ borrows: initialBorrows }: { borrows: Borrow[] }) {
-  const [borrows, setBorrows] = useState(initialBorrows)
-  const [returningId, setReturningId] = useState<string | null>(null)
-  const [message, setMessage] = useState("")
+export function MyBorrowsList({
+  borrows: initialBorrows,
+}: {
+  borrows: Borrow[];
+}) {
+  const [borrows, setBorrows] = useState(initialBorrows);
+  const [returningId, setReturningId] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
 
   const handleReturn = async (borrow: Borrow) => {
-    setReturningId(borrow._id)
-    setMessage("")
+    setReturningId(borrow._id);
+    setMessage("");
 
     try {
-      const token = await getTokenFromClient()
+      const token = await getTokenFromClient();
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/borrows/${borrow._id}`,
@@ -36,39 +40,39 @@ export function MyBorrowsList({ borrows: initialBorrows }: { borrows: Borrow[] }
             authorization: `Bearer ${token}`,
           },
         },
-      )
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Could not return this book.")
+        throw new Error(result.message || "Could not return this book.");
       }
 
       setBorrows((currentBorrows) =>
         currentBorrows.filter((item) => item._id !== borrow._id),
-      )
-      setMessage("Book returned. Thank you!")
+      );
+      setMessage("Book returned. Thank you!");
 
       toast.add({
         type: "success",
         title: "Book returned",
         description: "Thank you for returning this book.",
-      })
+      });
     } catch (error) {
       const errorText =
-        error instanceof Error ? error.message : "Could not return this book."
+        error instanceof Error ? error.message : "Could not return this book.";
 
-      setMessage(errorText)
+      setMessage(errorText);
 
       toast.add({
         type: "error",
         title: "Could not return book",
         description: errorText,
-      })
+      });
     } finally {
-      setReturningId(null)
+      setReturningId(null);
     }
-  }
+  };
 
   return (
     <>
@@ -77,20 +81,20 @@ export function MyBorrowsList({ borrows: initialBorrows }: { borrows: Borrow[] }
       {message && (
         <p
           role="status"
-          className="mb-4 rounded-md border border-[#34453b] bg-[#142019] px-4 py-3 text-sm"
+          className="mb-4 rounded-md border border-book-border-strong bg-book-surface px-4 py-3 text-sm"
         >
           {message}
         </p>
       )}
 
       {borrows.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-[#34453b] p-12 text-center text-[#9eaba2]">
+        <p className="rounded-lg border border-dashed border-book-border-strong p-12 text-center text-book-muted">
           You have no borrowed books right now.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-[#29372f]">
+        <div className="overflow-x-auto rounded-lg border border-book-border">
           <table className="w-full min-w-[700px] text-left text-sm">
-            <thead className="bg-[#142019] text-[#9eaba2]">
+            <thead className="bg-book-surface text-book-muted">
               <tr>
                 <th className="p-3">Image</th>
                 <th className="p-3">Title</th>
@@ -102,7 +106,7 @@ export function MyBorrowsList({ borrows: initialBorrows }: { borrows: Borrow[] }
 
             <tbody>
               {borrows.map((borrow) => (
-                <tr key={borrow._id} className="border-t border-[#29372f]">
+                <tr key={borrow._id} className="border-t border-book-border">
                   <td className="p-3">
                     <div className="relative size-12 overflow-hidden rounded">
                       <BookImage
@@ -123,7 +127,9 @@ export function MyBorrowsList({ borrows: initialBorrows }: { borrows: Borrow[] }
                       disabled={returningId === borrow._id}
                       onClick={() => void handleReturn(borrow)}
                     >
-                      {returningId === borrow._id ? "Returning…" : "Return Book"}
+                      {returningId === borrow._id
+                        ? "Returning…"
+                        : "Return Book"}
                     </Button>
                   </td>
                 </tr>
@@ -133,5 +139,5 @@ export function MyBorrowsList({ borrows: initialBorrows }: { borrows: Borrow[] }
         </div>
       )}
     </>
-  )
+  );
 }

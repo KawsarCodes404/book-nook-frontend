@@ -18,8 +18,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${josefinSans.className} dark h-full antialiased`}
+      data-theme="dark"
+      suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col bg-[#0b130f] text-[#e5eee8]">
+      <body className="flex min-h-full flex-col bg-book-page text-book-text">
         <Navbar />
         {children}
         <Footer />

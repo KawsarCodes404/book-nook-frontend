@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-import { Autoplay, EffectFade, Pagination } from "swiper/modules"
-import { Swiper, SwiperSlide } from "swiper/react"
-import "swiper/css"
-import "swiper/css/effect-fade"
-import "swiper/css/pagination"
+import Link from "next/link";
+import { useState } from "react";
+import { ArrowRight, BookOpen, PenLine, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
 
 const slides = [
   {
@@ -28,18 +29,26 @@ const slides = [
     title: "Borrow, read, return. Repeat.",
     text: "Seven days for every book. Return it with one click when you are done.",
     image:
-      "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=2200&q=85",
+      "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=2200&q=85",
   },
-]
+];
 
 export function HomeHero() {
+  const [activeSlide, setActiveSlide] = useState(1);
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <section className="relative isolate min-h-[470px] overflow-hidden border-b border-[#29372f]">
+    <section className="relative isolate min-h-[560px] overflow-hidden border-b border-book-border sm:min-h-[620px]">
       <Swiper
-        modules={[Autoplay, EffectFade, Pagination]}
-        effect="fade"
-        autoplay={{ delay: 6500, disableOnInteraction: false }}
+        modules={[Autoplay, Pagination]}
+        autoplay={
+          shouldReduceMotion
+            ? false
+            : { delay: 6500, disableOnInteraction: false, pauseOnMouseEnter: true }
+        }
         pagination={{ clickable: true }}
+        speed={shouldReduceMotion ? 0 : 850}
+        onSlideChange={(swiper) => setActiveSlide(swiper.realIndex + 1)}
         loop
         className="booknook-hero-swiper absolute inset-0 -z-20 !h-full"
         aria-label="BookNook featured books"
@@ -52,34 +61,99 @@ export function HomeHero() {
               style={{ backgroundImage: `url('${slide.image}')` }}
             />
 
-            <div className="absolute inset-0 bg-gradient-to-r from-[#07100c]/95 via-[#07100c]/65 to-[#07100c]/25" />
+            <div className="absolute inset-0 bg-gradient-to-r from-book-hero/95 via-book-hero/75 to-book-hero/40" />
+            <div className="booknook-drift absolute -right-20 top-10 size-80 rounded-full bg-book-accent/25 blur-3xl" />
 
-            <div className="relative mx-auto flex min-h-[470px] max-w-7xl items-center px-6 py-16 lg:px-8">
-              <div className="max-w-xl">
-                <p className="mb-4 text-xs font-semibold tracking-[0.22em] text-[#a2d9b2]">
+            <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-center justify-between gap-8 px-6 pb-24 pt-16 text-book-hero-text sm:min-h-[620px] lg:px-8">
+              <div className="max-w-2xl animate-[booknook-rise-in_700ms_ease-out_both]">
+                <p className="mb-4 text-xs font-semibold tracking-[0.22em] text-book-hero-accent">
                   {slide.eyebrow}
                 </p>
 
-                <h1 className="font-serif text-5xl font-bold leading-tight sm:text-6xl">
+                <h1 className="max-w-2xl font-serif text-5xl font-bold leading-[1.06] tracking-[-0.035em] sm:text-6xl lg:text-7xl">
                   {slide.title}
                 </h1>
 
-                <p className="mt-5 max-w-md text-base leading-7 text-[#d1d9d3]">
+                <p className="mt-6 max-w-lg text-base leading-7 text-book-hero-copy sm:text-lg">
                   {slide.text}
                 </p>
 
                 <Link
                   href="/books"
-                  className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#91cda3] px-5 py-3 text-sm font-semibold text-[#102016] transition hover:bg-[#a2d9b2]"
+                  className="booknook-action group relative mt-8 inline-flex items-center gap-3 rounded-full bg-book-accent px-6 py-3.5 text-sm font-semibold text-book-accent-ink shadow-lg shadow-black/20 hover:bg-book-accent-hover"
                 >
-                  Browse Books
-                  <ArrowRight className="size-4" />
+                  <span className="relative z-10">Browse Books</span>
+                  <ArrowRight className="relative size-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {/* A small, original SVG ink bloom gives the hero a living bookish texture. */}
+      <motion.svg
+        aria-hidden="true"
+        viewBox="0 0 520 440"
+        className="booknook-ink-bloom pointer-events-none absolute right-[12%] top-1/2 z-0 hidden h-[min(34vw,28rem)] w-[min(40vw,33rem)] -translate-y-1/2 lg:block"
+        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92, rotate: -8 }}
+        animate={{ opacity: 0.9, scale: 1, rotate: 0 }}
+        transition={{ duration: 1.1, ease: "easeOut" }}
+      >
+        <defs>
+          <radialGradient id="booknookBloom" cx="42%" cy="38%" r="68%">
+            <stop offset="0%" stopColor="#f4bd82" stopOpacity="0.45" />
+            <stop offset="58%" stopColor="#c95f43" stopOpacity="0.26" />
+            <stop offset="100%" stopColor="#815064" stopOpacity="0.08" />
+          </radialGradient>
+        </defs>
+        <path
+          className="booknook-bloom-shape"
+          fill="url(#booknookBloom)"
+          d="M259 24c53 3 73 42 105 65 39 28 102 32 119 77 18 47-22 85-45 123-24 41-31 94-78 113-47 19-90-13-136-20-51-8-112 8-145-31-33-40-11-95-15-145-4-48-34-102-7-142 28-41 93-30 139-39 25-5 42-3 63-1Z"
+        />
+        <path
+          d="M84 272c75-69 121 65 198-2 48-42 79-112 151-91"
+          fill="none"
+          stroke="#f2c09b"
+          strokeOpacity=".48"
+          strokeWidth="2"
+          strokeDasharray="5 10"
+        />
+        <circle cx="400" cy="115" r="5" fill="#f2c09b" />
+        <circle cx="115" cy="160" r="3" fill="#f2c09b" />
+      </motion.svg>
+
+      <aside className="booknook-float pointer-events-none absolute right-[max(calc((100vw-80rem)/2+3rem),2rem)] top-24 bottom-20 z-10 my-auto hidden h-fit w-64 rounded-[1.75rem] border border-white/20 bg-[#241e27]/90 p-5 text-book-hero-text shadow-2xl shadow-black/30 backdrop-blur-xl md:block lg:w-72 lg:p-6">
+        <div className="absolute -right-3 -top-3 flex size-11 items-center justify-center rounded-full border border-white/25 bg-book-accent text-book-accent-ink shadow-lg">
+          <PenLine className="booknook-pen-icon size-5" />
+        </div>
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-book-hero-accent">
+          <BookOpen className="size-4" />
+          The shared shelf
+        </div>
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+          className="mt-8 flex h-40 items-end justify-center gap-2 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/15 to-white/5 px-5 pb-5"
+        >
+          <span className="h-24 w-9 rounded-t-md border-l-4 border-white/20 bg-[#b86d58] shadow-md" />
+          <span className="h-32 w-10 rounded-t-md border-l-4 border-white/20 bg-[#d1a66f] shadow-md" />
+          <span className="h-28 w-9 rounded-t-md border-l-4 border-white/20 bg-[#596982] shadow-md" />
+          <span className="h-36 w-11 rounded-t-md border-l-4 border-white/20 bg-[#eee1cf] shadow-md" />
+          <span className="h-[6.5rem] w-8 rounded-t-md border-l-4 border-white/20 bg-[#6b536d] shadow-md" />
+        </motion.div>
+        <div className="mt-5 flex items-end justify-between gap-3">
+          <div>
+            <p className="font-serif text-lg font-semibold">Stories travel.</p>
+            <p className="mt-1 text-xs text-book-hero-copy">Pass a good read along.</p>
+          </div>
+          <span className="rounded-full border border-white/20 px-2.5 py-1 text-[10px] tracking-widest text-book-hero-accent">
+            {String(activeSlide).padStart(2, "0")} / 03
+          </span>
+        </div>
+      </aside>
     </section>
-  )
+  );
 }

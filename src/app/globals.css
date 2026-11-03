@@ -5,6 +5,31 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-book-page: var(--booknook-page);
+  --color-book-header: var(--booknook-header);
+  --color-book-surface: var(--booknook-surface);
+  --color-book-deep: var(--booknook-deep);
+  --color-book-input: var(--booknook-input);
+  --color-book-border: var(--booknook-border);
+  --color-book-border-strong: var(--booknook-border-strong);
+  --color-book-border-hover: var(--booknook-border-hover);
+  --color-book-text: var(--booknook-text);
+  --color-book-copy: var(--booknook-copy);
+  --color-book-muted: var(--booknook-muted);
+  --color-book-subtle: var(--booknook-subtle);
+  --color-book-chip: var(--booknook-chip);
+  --color-book-chip-text: var(--booknook-chip-text);
+  --color-book-accent: var(--booknook-accent);
+  --color-book-accent-hover: var(--booknook-accent-hover);
+  --color-book-accent-ink: var(--booknook-accent-ink);
+  --color-book-accent-text: var(--booknook-accent-text);
+  --color-book-warm: var(--booknook-warm);
+  --color-book-hover: var(--booknook-hover);
+  --color-book-hero: var(--booknook-hero);
+  --color-book-hero-text: var(--booknook-hero-text);
+  --color-book-hero-copy: var(--booknook-hero-copy);
+  --color-book-hero-accent: var(--booknook-hero-accent);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -49,6 +74,31 @@
 }
 
 :root {
+  color-scheme: light;
+  --booknook-page: #f8f1e7;
+  --booknook-header: #fffaf3;
+  --booknook-surface: #fffaf2;
+  --booknook-deep: #f0e5d8;
+  --booknook-input: #f5ece1;
+  --booknook-border: #e4d3c5;
+  --booknook-border-strong: #d1b9a6;
+  --booknook-border-hover: #b66d54;
+  --booknook-text: #2c1c20;
+  --booknook-copy: #594347;
+  --booknook-muted: #79686a;
+  --booknook-subtle: #927f80;
+  --booknook-chip: #f0e2d8;
+  --booknook-chip-text: #74453e;
+  --booknook-accent: #c95f43;
+  --booknook-accent-hover: #ad4937;
+  --booknook-accent-ink: #fffaf4;
+  --booknook-accent-text: #a34535;
+  --booknook-warm: #a34535;
+  --booknook-hover: #f0e2d8;
+  --booknook-hero: #1e1318;
+  --booknook-hero-text: #fff8ee;
+  --booknook-hero-copy: #edddd1;
+  --booknook-hero-accent: #e8a27b;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -84,6 +134,31 @@
 }
 
 .dark {
+  color-scheme: dark;
+  --booknook-page: #171012;
+  --booknook-header: #1d1417;
+  --booknook-surface: #251a1d;
+  --booknook-deep: #201619;
+  --booknook-input: #2d2023;
+  --booknook-border: #453236;
+  --booknook-border-strong: #634448;
+  --booknook-border-hover: #a35b4b;
+  --booknook-text: #f5e9df;
+  --booknook-copy: #ddc9c3;
+  --booknook-muted: #baa5a1;
+  --booknook-subtle: #9a8281;
+  --booknook-chip: #38272a;
+  --booknook-chip-text: #f0c9ae;
+  --booknook-accent: #e78b64;
+  --booknook-accent-hover: #f2a27c;
+  --booknook-accent-ink: #251619;
+  --booknook-accent-text: #f0ad8d;
+  --booknook-warm: #d99172;
+  --booknook-hover: #38272a;
+  --booknook-hero: #1e1318;
+  --booknook-hero-text: #fff8ee;
+  --booknook-hero-copy: #edddd1;
+  --booknook-hero-accent: #e8a27b;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -123,9 +198,139 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: var(--booknook-page);
+    color: var(--booknook-text);
+    transition:
+      background-color 220ms ease,
+      color 220ms ease;
   }
   html {
     @apply font-sans;
+  }
+}
+
+@keyframes booknook-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes booknook-float {
+  0%, 100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-1deg);
+  }
+}
+
+@keyframes booknook-drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(18px, -12px, 0) scale(1.04);
+  }
+}
+
+@keyframes booknook-sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+
+@keyframes booknook-ink-breathe {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.035) rotate(2deg);
+  }
+}
+
+@keyframes booknook-pen-write {
+  0%, 100% {
+    transform: rotate(-8deg) translateY(0);
+  }
+  50% {
+    transform: rotate(8deg) translateY(-2px);
+  }
+}
+
+.booknook-float {
+  animation: booknook-float 6s ease-in-out infinite;
+}
+
+.booknook-drift {
+  animation: booknook-drift 12s ease-in-out infinite;
+}
+
+.booknook-ink-bloom {
+  animation: booknook-ink-breathe 12s ease-in-out infinite;
+  filter: drop-shadow(0 24px 55px rgb(0 0 0 / 18%));
+}
+
+.booknook-pen-icon {
+  transform-origin: 20% 80%;
+  animation: booknook-pen-write 2.8s ease-in-out infinite;
+}
+
+.booknook-action {
+  overflow: hidden;
+  background-image: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 28%) 50%, transparent 65%);
+  background-repeat: no-repeat;
+  background-position: -140% 0;
+  background-size: 220% 100%;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    background-position 650ms ease;
+}
+
+.booknook-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgb(105 52 40 / 18%);
+  background-position: 140% 0;
+}
+
+.booknook-header-glow {
+  background: radial-gradient(circle, rgb(201 95 67 / 24%) 0%, rgb(201 95 67 / 0%) 70%);
+  filter: blur(14px);
+}
+
+.booknook-form-shell {
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 3%), transparent 45%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booknook-float,
+  .booknook-drift,
+  .booknook-ink-bloom,
+  .booknook-pen-icon {
+    animation: none;
+  }
+
+  .booknook-action,
+  .booknook-action:hover {
+    transition: none;
+    background-position: -140% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
   }
 }
 
@@ -136,11 +341,11 @@
 }
 
 .booknook-hero-swiper .swiper-pagination-bullet {
-  background: #e5eee8;
+  background: #f5e7df;
   opacity: 0.55;
 }
 
 .booknook-hero-swiper .swiper-pagination-bullet-active {
-  background: #a2d9b2;
+  background: #f0b78d;
   opacity: 1;
 }

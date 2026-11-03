@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { authClient } from "@/lib/auth-client"
-import { getTokenFromClient } from "@/lib/getTokenFromClient"
-import { Button } from "@/components/ui/button"
+import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,80 +13,83 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { toast, Toaster } from "@/components/ui/toast"
+} from "@/components/ui/dialog";
+import { toast, Toaster } from "@/components/ui/toast";
 
 type BorrowBookProps = {
-  bookId: string
-  bookTitle: string
-  availableCopies: number
-}
+  bookId: string;
+  bookTitle: string;
+  availableCopies: number;
+};
 
 export function BorrowBook({
   bookId,
   bookTitle,
   availableCopies,
 }: BorrowBookProps) {
-  const router = useRouter()
-  const { data: session } = authClient.useSession()
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
 
-  const [open, setOpen] = useState(false)
-  const [message, setMessage] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBorrow = async () => {
     if (!session?.user) {
-      const callbackUrl = `/books/${bookId}`
-      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
-      return
+      const callbackUrl = `/books/${bookId}`;
+      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
     }
 
-    setIsSubmitting(true)
-    setMessage("")
+    setIsSubmitting(true);
+    setMessage("");
 
     try {
-      const token = await getTokenFromClient()
+      const token = await getTokenFromClient();
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/borrows`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/borrows`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ bookId }),
         },
-        body: JSON.stringify({ bookId }),
-      })
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Could not borrow this book.")
+        throw new Error(result.message || "Could not borrow this book.");
       }
 
-      setOpen(false)
-      setMessage(result.message || "Book borrowed. Return it within 7 days.")
+      setOpen(false);
+      setMessage(result.message || "Book borrowed. Return it within 7 days.");
 
       toast.add({
         type: "success",
         title: "Book borrowed",
         description: "Return it within 7 days.",
-      })
+      });
 
-      router.refresh()
+      router.refresh();
     } catch (error) {
       const errorText =
-        error instanceof Error ? error.message : "Could not borrow this book."
+        error instanceof Error ? error.message : "Could not borrow this book.";
 
-      setMessage(errorText)
+      setMessage(errorText);
 
       toast.add({
         type: "error",
         title: "Borrow failed",
         description: errorText,
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <>
@@ -95,30 +98,30 @@ export function BorrowBook({
       <Button
         disabled={availableCopies < 1}
         onClick={() => setOpen(true)}
-        className="bg-[#91cda3] text-[#102016] hover:bg-[#a2d9b2] disabled:opacity-60"
+        className="bg-book-accent text-book-accent-ink hover:bg-book-accent-hover disabled:opacity-60"
       >
         {availableCopies < 1 ? "Not Available" : "Borrow This Book"}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="border border-[#34453b] bg-[#142019] text-[#e5eee8]">
+        <DialogContent className="border border-book-border-strong bg-book-surface text-book-text">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl">
               Borrow “{bookTitle}”
             </DialogTitle>
-            <DialogDescription className="text-[#9eaba2]">
+            <DialogDescription className="text-book-muted">
               You can keep this book for 7 days.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-3 text-sm">
             <p>
-              <span className="text-[#9eaba2]">User name</span>
+              <span className="text-book-muted">User name</span>
               <br />
               {session?.user.name}
             </p>
             <p>
-              <span className="text-[#9eaba2]">User email</span>
+              <span className="text-book-muted">User email</span>
               <br />
               {session?.user.email}
             </p>
@@ -142,7 +145,7 @@ export function BorrowBook({
               type="button"
               disabled={isSubmitting}
               onClick={handleBorrow}
-              className="bg-[#91cda3] text-[#102016] hover:bg-[#a2d9b2]"
+              className="bg-book-accent text-book-accent-ink hover:bg-book-accent-hover"
             >
               {isSubmitting ? "Borrowing…" : "Confirm Borrow"}
             </Button>
@@ -150,5 +153,5 @@ export function BorrowBook({
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
