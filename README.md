@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BookNook
 
-## Getting Started
+BookNook is a small online library where readers can share books from their shelves, borrow books from other readers, and return them after reading.
 
-First, run the development server:
+**Live site:** Add the deployed URL here after deployment.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Browse and search the shared book shelf by title, author, and category.
+- See the newest books and browse featured sections from the home page.
+- Register or log in with email and password, or continue with Google.
+- Add, edit, and remove books from your own shelf.
+- Borrow available books for seven days and return them from My Borrows.
+- See remaining copies and avoid borrowing the same book twice at once.
+- Protected routes and API requests use Better Auth sessions and JWT verification.
+- Responsive dark library interface built with Next.js, TypeScript, and shadcn/ui.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js App Router, React, TypeScript, Tailwind CSS, and shadcn/ui
+- Better Auth with the MongoDB adapter and Google OAuth
+- Express, MongoDB, and `jose` for the BookNook API
 
-## Learn More
+## Run locally
 
-To learn more about Next.js, take a look at the following resources:
+1. Copy `.env.example` to `.env` and add your MongoDB URI, Better Auth secret, Google OAuth credentials, and ImgBB API key.
+2. Start the API from `book-nook-backend` with `node index.js`.
+3. Start this app with `npm run dev`.
+4. Open `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The Google OAuth credentials must use `http://localhost:3000/api/auth/callback/google` as the development redirect URI. For deployment, update `BETTER_AUTH_URL`, the API `CLIENT_URL`, `NEXT_PUBLIC_API_URL`, and the provider's authorized redirect URI to your deployed domains.

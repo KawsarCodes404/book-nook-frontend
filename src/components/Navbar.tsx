@@ -1,9 +1,12 @@
 'use client'
-import { User } from "lucide-react"
+
 import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+import { BookOpen } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
   Popover,
   PopoverContent,
@@ -12,124 +15,109 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Button } from "./ui/button"
 
-const navLinks = [
-  { label: "Home", href: "/", active: true },
-  { label: "Destinations", href: "/destinations" },
-  { label: "Add Destination", href: "/add-destination", active: false },
-  { label: "My Bookings", href: "/my-bookings" },
+const publicLinks = [
+  { label: "Home", href: "/" },
+  { label: "All Books", href: "/books" },
 ]
 
-const authLinks = [
-  { label: "Login", href: "/login" },
-  { label: "Sign Up", href: "/signup", emphasis: true },
+const privateLinks = [
+  { label: "Add Book", href: "/add-book" },
+  { label: "My Books", href: "/my-books" },
+  { label: "My Borrows", href: "/my-borrows" },
 ]
 
-function Navbar({ className }: { className?: string }) {
+export function Navbar() {
+  const router = useRouter()
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+  const links = user ? [...publicLinks, ...privateLinks] : publicLinks
 
-  const { data: session } = authClient.useSession();
-
-  const user = session?.user;
-
-  const handleSignOut = () => {
-    authClient.signOut();
+  const handleLogout = async () => {
+    await authClient.signOut()
+    router.push("/")
+    router.refresh()
   }
 
   return (
-    <header className={cn("sticky top-0 z-50 px-2 pt-2", className)}>
-      <div className="flex h-14 items-center justify-between rounded-lg bg-background px-6 shadow-sm">
-        <nav className="flex items-center gap-7">
-          {navLinks.map((link) => (
+    <header className="sticky top-0 z-50 border-b border-[#26362d] bg-[#0d1711]/95 px-4 text-[#e2ece5] backdrop-blur">
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-5">
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-2 font-serif text-xl font-bold"
+        >
+          <span className="flex size-9 items-center justify-center rounded-md bg-[#91cda3] text-[#102016]">
+            <BookOpen className="size-5" />
+          </span>
+          BookNook
+        </Link>
+
+        <nav aria-label="Main navigation" className="flex max-w-[42vw] flex-1 items-center justify-start gap-4 overflow-x-auto whitespace-nowrap px-1 text-xs md:max-w-none md:justify-center md:gap-6 md:text-sm">
+          {links.map((link) => (
             <Link
-              key={link.label}
+              key={link.href}
               href={link.href}
-              className={cn(
-                "text-sm transition-colors hover:text-brand",
-                link.active
-                  ? "text-brand underline decoration-brand decoration-2 underline-offset-4"
-                  : "text-foreground"
-              )}
+              className="text-sm text-[#aebbb2] transition-colors hover:text-[#a2d9b2]"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <Link
-          href="/"
-          className="absolute left-1/2 -translate-x-1/2 font-serif text-3xl font-semibold tracking-wide text-brand"
-        >
-          Wanderlast
-        </Link>
-
-        <div className="flex items-center gap-6">
-          <Link
-            href="/profile"
-            className="flex items-center gap-1.5 text-sm transition-colors hover:text-brand"
-          >
-            <User className="size-4" />
-            Profile
-          </Link>
-
+        <div className="flex shrink-0 items-center gap-2">
           {user ? (
             <Popover>
               <PopoverTrigger
-                render={<button
-                  type="button"
-                  aria-label="Open account menu"
-                  className="inline-flex appearance-none rounded-full border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <Avatar className="size-9 rounded-full">
-                    <AvatarImage
-                      referrerPolicy="no-referrer"
-                      src={user.image ?? undefined}
-                      className="rounded-full object-cover"
-                    />
-                    <AvatarFallback className="rounded-full">
-                      {user.name?.charAt(0) ?? "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-                }
-              />
-
-              <PopoverContent>
+                aria-label="Open account menu"
+                className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#91cda3]"
+              >
+                <Avatar className="size-9">
+                  <AvatarImage
+                    src={user.image ?? undefined}
+                    referrerPolicy="no-referrer"
+                  />
+                  <AvatarFallback>{user.name?.charAt(0) ?? "U"}</AvatarFallback>
+                </Avatar>
+              </PopoverTrigger>
+              <PopoverContent className="w-56">
                 <PopoverHeader>
                   <PopoverTitle>{user.name}</PopoverTitle>
                   <PopoverDescription>{user.email}</PopoverDescription>
                 </PopoverHeader>
-
+                <Link href="/profile" className="py-2 text-sm hover:underline">
+                  My Profile
+                </Link>
                 <Button
                   type="button"
-                  onClick={handleSignOut}
+                  className="w-full"
                   variant="destructive"
-                  className="mt-3 w-full"
+                  onClick={handleLogout}
                 >
-                  Sign out
+                  Logout
                 </Button>
               </PopoverContent>
             </Popover>
           ) : (
-            authLinks.map((link) => (
+            <>
               <Link
-                key={link.label}
-                href={link.href}
+                href="/login"
+                className={cn(buttonVariants({ variant: "ghost" }), "text-[#dce8df]")}
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
                 className={cn(
-                  "text-sm transition-colors hover:text-brand",  
-                  link.emphasis && "font-semibold"
+                  buttonVariants(),
+                  "bg-[#91cda3] text-[#102016] hover:bg-[#a2d9b2]",
                 )}
               >
-                {link.label}
+                Register
               </Link>
-            ))
+            </>
           )}
-
         </div>
-
       </div>
     </header>
   )
 }
-
-export { Navbar }
