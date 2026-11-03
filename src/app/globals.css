@@ -128,3 +128,19 @@
     @apply font-sans;
   }
 }
+
+.booknook-hero-swiper .swiper-pagination {
+  bottom: 1.25rem !important;
+  text-align: left;
+  padding-left: max(calc((100vw - 80rem) / 2 + 1.5rem), 1.5rem);
+}
+
+.booknook-hero-swiper .swiper-pagination-bullet {
+  background: #e5eee8;
+  opacity: 0.55;
+}
+
+.booknook-hero-swiper .swiper-pagination-bullet-active {
+  background: #a2d9b2;
+  opacity: 1;
+}
