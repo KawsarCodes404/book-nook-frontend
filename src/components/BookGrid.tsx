@@ -60,7 +60,7 @@ export function BookGrid({
           No books found. Try a different search.
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
           {visibleBooks.map((book) => (
             <article
               key={book._id}

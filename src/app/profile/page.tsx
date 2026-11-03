@@ -26,7 +26,9 @@ export default async function ProfilePage() {
           />
         )}
         <h1 className="mt-5 font-serif text-3xl font-bold">{session.user.name}</h1>
-        <p className="mt-2 text-sm text-[#9eaba2]">{session.user.email}</p>
+        <p className="mt-2 break-all text-sm text-[#9eaba2]">
+          {session.user.email}
+        </p>
         <p className="mt-6 text-xs text-[#9eaba2]">Welcome to your BookNook profile.</p>
       </section>
     </main>

@@ -81,8 +81,12 @@ export function Navbar() {
               </PopoverTrigger>
               <PopoverContent className="w-56">
                 <PopoverHeader>
-                  <PopoverTitle>{user.name}</PopoverTitle>
-                  <PopoverDescription>{user.email}</PopoverDescription>
+                  <PopoverTitle className="break-words">
+                    {user.name}
+                  </PopoverTitle>
+                  <PopoverDescription className="break-all">
+                    {user.email}
+                  </PopoverDescription>
                 </PopoverHeader>
                 <Link href="/profile" className="py-2 text-sm hover:underline">
                   My Profile
