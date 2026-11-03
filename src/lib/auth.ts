@@ -8,26 +8,38 @@ const db = client.db("book-nook");
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
+
     database: mongodbAdapter(db, {
         client,
     }),
+
     emailAndPassword: {
         enabled: true,
         autoSignIn: false,
         minPasswordLength: 6,
     },
+
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ["google"],
+        },
+    },
+
     socialProviders: {
         google: {
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         },
     },
+
     plugins: [jwt()],
+
     session: {
         cookieCache: {
             enabled: true,
-            strategy: 'jwt',
-            maxAge: 7 * 24 * 60 * 60
-        }
-    }
+            strategy: "jwt",
+            maxAge: 7 * 24 * 60 * 60,
+        },
+    },
 });

@@ -3,8 +3,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { PenLine } from "lucide-react";
 
 import { BookImage } from "@/components/BookImage";
+import { BookShareIllustration } from "@/components/BookShareIllustration";
 import type { Book } from "@/lib/books";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { Button } from "@/components/ui/button";
@@ -176,12 +178,19 @@ export function MyBooksManager({ books: initialBooks }: { books: Book[] }) {
       )}
 
       {books.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-book-border-strong p-12 text-center">
-          <p>Your shelf is empty for now.</p>
+        <div className="booknook-empty-state rounded-2xl border border-dashed border-book-border-strong bg-book-surface px-6 py-10 text-center sm:px-10">
+          <BookShareIllustration compact />
+          <h2 className="mt-4 font-serif text-2xl font-semibold">
+            Your shelf is ready for a story.
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-book-muted">
+            Add a book you have enjoyed and let another reader discover it.
+          </p>
           <Button
-            className="mt-4 bg-book-accent text-book-accent-ink"
+            className="booknook-action mt-5 bg-book-accent text-book-accent-ink"
             onClick={() => router.push("/add-book")}
           >
+            <PenLine aria-hidden="true" className="booknook-pen-icon mr-2 size-4" />
             Add your first book
           </Button>
         </div>

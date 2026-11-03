@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AlertCircle, LoaderCircle } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { AuthAside } from "@/components/AuthAside";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -51,13 +53,30 @@ function getSafeCallbackUrl() {
   return "/";
 }
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [hideQueryMessage, setHideQueryMessage] = useState(false);
+
+  const oauthError = searchParams.get("error");
+  const queryMessage =
+    oauthError === "account_not_linked"
+      ? "This email already has a BookNook password account. Sign in with your email and password first."
+      : oauthError
+        ? "Google sign in could not be completed. Please try again."
+        : searchParams.get("registered") === "1"
+          ? "Your account is ready. Sign in to open your shelf."
+          : "";
+  const visibleMessage = errorMessage || (hideQueryMessage ? "" : queryMessage);
 
   const handleEmailLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setHideQueryMessage(true);
     setErrorMessage("");
+    setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
     const callbackUrl = getSafeCallbackUrl();
@@ -72,6 +91,7 @@ export default function SignInPage() {
       setErrorMessage(
         error.message ?? "Sign in failed. Please check your details.",
       );
+      setIsSubmitting(false);
       return;
     }
 
@@ -80,7 +100,9 @@ export default function SignInPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    setHideQueryMessage(true);
     setErrorMessage("");
+    setIsGoogleLoading(true);
 
     const callbackUrl = getSafeCallbackUrl();
     const { error } = await authClient.signIn.social({
@@ -93,14 +115,20 @@ export default function SignInPage() {
       setErrorMessage(
         error.message ?? "Google sign in failed. Please try again.",
       );
+      setIsGoogleLoading(false);
     }
   };
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-book-page px-4 py-12 text-book-text">
-      <Card className="w-full max-w-md border border-book-border bg-book-surface text-book-text shadow-2xl shadow-black/20">
+    <main className="flex flex-1 items-center justify-center bg-book-page px-4 py-10 text-book-text sm:px-6 lg:py-14">
+      <div className="grid w-full max-w-5xl items-center gap-6 md:grid-cols-[1fr_0.9fr] lg:gap-10">
+        <AuthAside mode="login" />
+
+        <Card className="booknook-form-shell booknook-rise-in mx-auto w-full max-w-md border border-book-border bg-book-surface text-book-text shadow-2xl shadow-black/10 md:max-w-none">
         <CardHeader className="pb-6 text-center">
+          <p className="text-[11px] font-semibold tracking-[0.22em] text-book-accent-text">WELCOME BACK</p>
           <CardTitle className="font-serif text-3xl">Login</CardTitle>
+          <p className="text-sm text-book-muted">Your next good read is waiting.</p>
         </CardHeader>
 
         <CardContent>
@@ -135,17 +163,19 @@ export default function SignInPage() {
                 />
               </Field>
 
-              {errorMessage && (
-                <p role="alert" className="text-sm text-red-300">
-                  {errorMessage}
+              {visibleMessage && (
+                <p role="status" className={`flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm ${visibleMessage.startsWith("Your account") ? "border-book-border bg-book-page text-book-accent-text" : "border-red-900/30 bg-red-950/20 text-red-700 dark:text-red-300"}`}>
+                  <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                  {visibleMessage}
                 </p>
               )}
 
               <Button
                 type="submit"
+                disabled={isSubmitting || isGoogleLoading}
                 className="w-full bg-book-accent text-book-accent-ink hover:bg-book-accent-hover"
               >
-                Login
+                {isSubmitting ? <><LoaderCircle className="animate-spin" /> Signing in…</> : "Login"}
               </Button>
 
               <FieldSeparator className="text-book-muted [&_[data-slot=field-separator-content]]:bg-book-surface">
@@ -155,11 +185,12 @@ export default function SignInPage() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={isSubmitting || isGoogleLoading}
                 onClick={handleGoogleSignIn}
-                className="w-full border-book-border-strong bg-book-input text-book-text hover:bg-book-hover"
+                className="booknook-action w-full border-book-border-strong bg-book-input text-book-text hover:bg-book-hover"
               >
                 <GoogleIcon />
-                Continue with Google
+                {isGoogleLoading ? "Connecting to Google…" : "Continue with Google"}
               </Button>
 
               <FieldDescription className="pt-2 text-center text-book-muted">
@@ -184,7 +215,22 @@ export default function SignInPage() {
             </FieldGroup>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </main>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex flex-1 items-center justify-center bg-book-page px-4 py-12 text-book-muted">
+          Preparing your sign in…
+        </main>
+      }
+    >
+      <SignInForm />
+    </Suspense>
   );
 }

@@ -98,7 +98,7 @@ export function BorrowBook({
       <Button
         disabled={availableCopies < 1}
         onClick={() => setOpen(true)}
-        className="bg-book-accent text-book-accent-ink hover:bg-book-accent-hover disabled:opacity-60"
+        className="booknook-action bg-book-accent text-book-accent-ink hover:bg-book-accent-hover disabled:opacity-60"
       >
         {availableCopies < 1 ? "Not Available" : "Borrow This Book"}
       </Button>
@@ -145,7 +145,7 @@ export function BorrowBook({
               type="button"
               disabled={isSubmitting}
               onClick={handleBorrow}
-              className="bg-book-accent text-book-accent-ink hover:bg-book-accent-hover"
+              className="booknook-action bg-book-accent text-book-accent-ink hover:bg-book-accent-hover"
             >
               {isSubmitting ? "Borrowing…" : "Confirm Borrow"}
             </Button>

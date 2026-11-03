@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { LoaderCircle } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { AuthAside } from "@/components/AuthAside";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -48,6 +50,8 @@ export default function RegisterPage() {
 
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,6 +69,7 @@ export default function RegisterPage() {
     }
 
     const formData = new FormData(event.currentTarget);
+    setIsSubmitting(true);
 
     const { error } = await authClient.signUp.email({
       name: String(formData.get("name")),
@@ -77,6 +82,7 @@ export default function RegisterPage() {
       setErrorMessage(
         error.message ?? "Registration failed. Please try again.",
       );
+      setIsSubmitting(false);
       return;
     }
 
@@ -88,6 +94,7 @@ export default function RegisterPage() {
 
   const handleGoogleSignIn = async () => {
     setErrorMessage("");
+    setIsGoogleLoading(true);
 
     const { error } = await authClient.signIn.social({
       provider: "google",
@@ -99,16 +106,22 @@ export default function RegisterPage() {
       setErrorMessage(
         error.message ?? "Google sign in failed. Please try again.",
       );
+      setIsGoogleLoading(false);
     }
   };
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-book-page px-4 py-12 text-book-text">
-      <Card className="w-full max-w-md border border-book-border bg-book-surface text-book-text">
+    <main className="flex flex-1 items-center justify-center bg-book-page px-4 py-10 text-book-text sm:px-6 lg:py-14">
+      <div className="grid w-full max-w-5xl items-center gap-6 md:grid-cols-[1fr_0.9fr] lg:gap-10">
+        <AuthAside mode="register" />
+
+        <Card className="booknook-form-shell booknook-rise-in mx-auto w-full max-w-md border border-book-border bg-book-surface text-book-text md:max-w-none">
         <CardHeader className="text-center">
+          <p className="text-[11px] font-semibold tracking-[0.22em] text-book-accent-text">JOIN THE SHELF</p>
           <CardTitle className="font-serif text-3xl">
             Create your account
           </CardTitle>
+          <p className="text-sm text-book-muted">A community of readers is a page away.</p>
         </CardHeader>
 
         <CardContent>
@@ -183,9 +196,10 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
+                disabled={isSubmitting || isGoogleLoading}
                 className="w-full bg-book-accent text-book-accent-ink hover:bg-book-accent-hover"
               >
-                Register
+                {isSubmitting ? <><LoaderCircle className="animate-spin" /> Creating account…</> : "Register"}
               </Button>
 
               <FieldSeparator className="text-book-muted [&_[data-slot=field-separator-content]]:bg-book-surface">
@@ -195,10 +209,12 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={isSubmitting || isGoogleLoading}
                 onClick={handleGoogleSignIn}
-                className="w-full border-book-border-strong bg-book-input text-book-text hover:bg-book-hover"
+                className="booknook-action w-full border-book-border-strong bg-book-input text-book-text hover:bg-book-hover"
               >
-                Continue with Google
+                <span aria-hidden="true" className="font-bold text-blue-500">G</span>
+                {isGoogleLoading ? "Connecting to Google…" : "Continue with Google"}
               </Button>
 
               <FieldDescription className="text-center text-book-muted">
@@ -213,7 +229,8 @@ export default function RegisterPage() {
             </FieldGroup>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </main>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { BookGrid } from "@/components/BookGrid";
+import { PageHeading } from "@/components/PageHeading";
 import type { Book } from "@/lib/books";
 
 export const metadata: Metadata = {
@@ -61,12 +62,11 @@ function BooksLoading() {
 export default function BooksPage(props: PageProps<"/books">) {
   return (
     <main className="min-h-[60vh] flex-1 bg-book-page text-book-text">
-      <section className="border-b border-book-border bg-book-surface px-6 py-10 text-center">
-        <h1 className="font-serif text-4xl font-bold">All Books</h1>
-        <p className="mt-2 text-sm text-book-muted">
-          Every book on the BookNook shelf.
-        </p>
-      </section>
+      <PageHeading
+        eyebrow="THE COMMUNITY SHELF"
+        title="All Books"
+        description="Find a story worth sharing, from the shelves of readers nearby."
+      />
 
       <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <Suspense fallback={<BooksLoading />}>

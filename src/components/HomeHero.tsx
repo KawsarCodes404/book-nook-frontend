@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BookOpen, PenLine, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, PenLine } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -63,9 +63,48 @@ export function HomeHero() {
 
             <div className="absolute inset-0 bg-gradient-to-r from-book-hero/95 via-book-hero/75 to-book-hero/40" />
             <div className="booknook-drift absolute -right-20 top-10 size-80 rounded-full bg-book-accent/25 blur-3xl" />
+            <motion.div
+              aria-hidden="true"
+              className="booknook-hero-blob pointer-events-none absolute right-[20%] top-[8%] z-0 hidden sm:block"
+              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.88, rotate: -10 }}
+              animate={
+                shouldReduceMotion
+                  ? { opacity: 1 }
+                  : { opacity: 0.9, scale: 1, rotate: 0 }
+              }
+              transition={{ duration: shouldReduceMotion ? 0 : 1.1, ease: "easeOut" }}
+            >
+              <svg viewBox="0 0 520 440" className="size-full" fill="none">
+                <path
+                  d="M259 24c53 3 73 42 105 65 39 28 102 32 119 77 18 47-22 85-45 123-24 41-31 94-78 113-47 19-90-13-136-20-51-8-112 8-145-31-33-40-11-95-15-145-4-48-34-102-7-142 28-41 93-30 139-39 25-5 42-3 63-1Z"
+                  fill="#c95f43"
+                  fillOpacity=".68"
+                />
+                <path
+                  d="M203 92c45-25 82-15 113 8 36 27 51 52 94 55 35 2 63 21 69 48 7 32-19 57-42 80-20 20-40 47-71 45-34-1-50-31-82-36-35-5-73 14-99-7-28-22-20-58-13-91 6-30 1-83 31-102Z"
+                  fill="#e8a27b"
+                  fillOpacity=".32"
+                />
+                <path
+                  d="M133 321c62-37 103-87 159-77 48 8 80 55 136 25"
+                  stroke="#fff1df"
+                  strokeOpacity=".74"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M84 272c75-69 121 65 198-2 48-42 79-112 151-91"
+                  stroke="#ffe0c4"
+                  strokeOpacity=".95"
+                  strokeWidth="2"
+                  strokeDasharray="5 10"
+                />
+                <circle cx="400" cy="115" r="5" fill="#ffe0c4" />
+                <circle cx="115" cy="160" r="3" fill="#ffe0c4" />
+              </svg>
+            </motion.div>
 
             <div className="relative mx-auto flex min-h-[560px] max-w-7xl items-center justify-between gap-8 px-6 pb-24 pt-16 text-book-hero-text sm:min-h-[620px] lg:px-8">
-              <div className="max-w-2xl animate-[booknook-rise-in_700ms_ease-out_both]">
+              <div className="relative z-10 booknook-rise-in max-w-2xl">
                 <p className="mb-4 text-xs font-semibold tracking-[0.22em] text-book-hero-accent">
                   {slide.eyebrow}
                 </p>
@@ -91,39 +130,6 @@ export function HomeHero() {
         ))}
       </Swiper>
 
-      {/* A small, original SVG ink bloom gives the hero a living bookish texture. */}
-      <motion.svg
-        aria-hidden="true"
-        viewBox="0 0 520 440"
-        className="booknook-ink-bloom pointer-events-none absolute right-[12%] top-1/2 z-0 hidden h-[min(34vw,28rem)] w-[min(40vw,33rem)] -translate-y-1/2 lg:block"
-        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92, rotate: -8 }}
-        animate={{ opacity: 0.9, scale: 1, rotate: 0 }}
-        transition={{ duration: 1.1, ease: "easeOut" }}
-      >
-        <defs>
-          <radialGradient id="booknookBloom" cx="42%" cy="38%" r="68%">
-            <stop offset="0%" stopColor="#f4bd82" stopOpacity="0.45" />
-            <stop offset="58%" stopColor="#c95f43" stopOpacity="0.26" />
-            <stop offset="100%" stopColor="#815064" stopOpacity="0.08" />
-          </radialGradient>
-        </defs>
-        <path
-          className="booknook-bloom-shape"
-          fill="url(#booknookBloom)"
-          d="M259 24c53 3 73 42 105 65 39 28 102 32 119 77 18 47-22 85-45 123-24 41-31 94-78 113-47 19-90-13-136-20-51-8-112 8-145-31-33-40-11-95-15-145-4-48-34-102-7-142 28-41 93-30 139-39 25-5 42-3 63-1Z"
-        />
-        <path
-          d="M84 272c75-69 121 65 198-2 48-42 79-112 151-91"
-          fill="none"
-          stroke="#f2c09b"
-          strokeOpacity=".48"
-          strokeWidth="2"
-          strokeDasharray="5 10"
-        />
-        <circle cx="400" cy="115" r="5" fill="#f2c09b" />
-        <circle cx="115" cy="160" r="3" fill="#f2c09b" />
-      </motion.svg>
-
       <aside className="booknook-float pointer-events-none absolute right-[max(calc((100vw-80rem)/2+3rem),2rem)] top-24 bottom-20 z-10 my-auto hidden h-fit w-64 rounded-[1.75rem] border border-white/20 bg-[#241e27]/90 p-5 text-book-hero-text shadow-2xl shadow-black/30 backdrop-blur-xl md:block lg:w-72 lg:p-6">
         <div className="absolute -right-3 -top-3 flex size-11 items-center justify-center rounded-full border border-white/25 bg-book-accent text-book-accent-ink shadow-lg">
           <PenLine className="booknook-pen-icon size-5" />
@@ -134,8 +140,12 @@ export function HomeHero() {
         </div>
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+          animate={
+            shouldReduceMotion
+              ? { opacity: 1 }
+              : { opacity: 1, y: 0, scale: 1 }
+          }
+          transition={{ duration: shouldReduceMotion ? 0 : 0.7, delay: 0.2, ease: "easeOut" }}
           className="mt-8 flex h-40 items-end justify-center gap-2 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/15 to-white/5 px-5 pb-5"
         >
           <span className="h-24 w-9 rounded-t-md border-l-4 border-white/20 bg-[#b86d58] shadow-md" />

@@ -247,12 +247,14 @@
   }
 }
 
-@keyframes booknook-ink-breathe {
+@keyframes booknook-shape-morph {
   0%, 100% {
-    transform: scale(1) rotate(0deg);
+    border-radius: 41% 59% 57% 43% / 48% 39% 61% 52%;
+    transform: rotate(-5deg) scale(0.98);
   }
   50% {
-    transform: scale(1.035) rotate(2deg);
+    border-radius: 58% 42% 39% 61% / 40% 58% 42% 60%;
+    transform: rotate(4deg) scale(1.03);
   }
 }
 
@@ -269,13 +271,74 @@
   animation: booknook-float 6s ease-in-out infinite;
 }
 
+.booknook-rise-in {
+  animation: booknook-rise-in 700ms ease-out both;
+}
+
 .booknook-drift {
   animation: booknook-drift 12s ease-in-out infinite;
 }
 
-.booknook-ink-bloom {
-  animation: booknook-ink-breathe 12s ease-in-out infinite;
-  filter: drop-shadow(0 24px 55px rgb(0 0 0 / 18%));
+.booknook-hero-blob {
+  width: min(33rem, 48vw);
+  height: clamp(17rem, 35vw, 28rem);
+  isolation: isolate;
+  filter: drop-shadow(0 24px 55px rgb(0 0 0 / 24%));
+}
+
+.booknook-hero-blob::before {
+  position: absolute;
+  z-index: -1;
+  inset: 2% 1%;
+  content: "";
+  border-radius: 41% 59% 57% 43% / 48% 39% 61% 52%;
+  background:
+    radial-gradient(ellipse at 38% 34%, rgb(255 210 153 / 90%), transparent 43%),
+    radial-gradient(ellipse at 68% 66%, rgb(232 139 100 / 82%), transparent 55%),
+    radial-gradient(ellipse at 46% 74%, rgb(129 80 100 / 72%), transparent 59%);
+  animation: booknook-shape-morph 16s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.booknook-book-card {
+  transition:
+    transform 320ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    border-color 280ms ease,
+    box-shadow 280ms ease;
+}
+
+.booknook-book-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--booknook-border-hover);
+  box-shadow: 0 22px 44px rgb(66 36 31 / 18%);
+}
+
+.booknook-cover-mark {
+  animation: booknook-float 5s ease-in-out infinite;
+}
+
+.booknook-cover-orbit {
+  animation: booknook-drift 15s ease-in-out infinite;
+}
+
+.booknook-cover::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(145deg, rgb(255 228 191 / 18%), transparent 42%);
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.booknook-book-card:hover .booknook-cover::after {
+  opacity: 1;
+}
+
+.booknook-hero-blob svg {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
 }
 
 .booknook-pen-icon {
@@ -307,21 +370,148 @@
   filter: blur(14px);
 }
 
+.booknook-auth-aside {
+  background:
+    radial-gradient(ellipse at 82% 12%, rgb(201 95 67 / 12%), transparent 36%),
+    radial-gradient(ellipse at 12% 90%, rgb(208 170 125 / 12%), transparent 36%),
+    var(--booknook-surface);
+}
+
+.booknook-auth-orbit {
+  border: 1px solid rgb(201 95 67 / 16%);
+  background: repeating-radial-gradient(circle, transparent 0 15px, rgb(201 95 67 / 7%) 16px 17px);
+}
+
+.booknook-detail-orb {
+  border: 1px solid rgb(201 95 67 / 12%);
+  background:
+    radial-gradient(circle at 35% 35%, rgb(232 162 123 / 12%), transparent 48%),
+    repeating-radial-gradient(circle, transparent 0 20px, rgb(201 95 67 / 5%) 21px 22px);
+}
+
+.booknook-detail-cover {
+  transition:
+    transform 420ms ease,
+    box-shadow 420ms ease;
+}
+
+.booknook-detail-cover:hover {
+  transform: translateY(-5px) rotate(-0.5deg);
+  box-shadow: 0 28px 60px rgb(66 36 31 / 16%);
+}
+
+.booknook-page-heading {
+  background-image:
+    radial-gradient(ellipse at 50% 100%, rgb(201 95 67 / 7%), transparent 55%),
+    linear-gradient(180deg, rgb(255 255 255 / 1.5%), transparent);
+}
+
+.booknook-heading-orbit {
+  border: 1px solid rgb(201 95 67 / 13%);
+  background: repeating-radial-gradient(circle, transparent 0 13px, rgb(201 95 67 / 8%) 14px 15px);
+  animation: booknook-drift 14s ease-in-out infinite;
+}
+
 .booknook-form-shell {
   background-image: linear-gradient(135deg, rgb(255 255 255 / 3%), transparent 45%);
+}
+
+.booknook-community-band {
+  background:
+    radial-gradient(ellipse at 85% 15%, rgb(201 95 67 / 11%), transparent 32%),
+    radial-gradient(ellipse at 8% 100%, rgb(208 170 125 / 12%), transparent 35%),
+    var(--booknook-surface);
+}
+
+.booknook-community-orb {
+  position: absolute;
+  z-index: -1;
+  top: 14%;
+  right: 6%;
+  width: clamp(14rem, 28vw, 25rem);
+  aspect-ratio: 1;
+  border: 1px solid rgb(201 95 67 / 12%);
+  border-radius: 43% 57% 64% 36% / 48% 40% 60% 52%;
+  background:
+    radial-gradient(circle at 35% 34%, rgb(232 162 123 / 15%), transparent 45%),
+    repeating-radial-gradient(circle at 50% 50%, transparent 0 22px, rgb(201 95 67 / 5%) 23px 24px);
+  animation: booknook-shape-morph 19s ease-in-out infinite;
+}
+
+.booknook-people-scene {
+  width: min(100%, 34rem);
+  justify-self: center;
+  color: var(--booknook-accent);
+  filter: drop-shadow(0 18px 24px rgb(66 36 31 / 10%));
+}
+
+.booknook-people-scene-compact {
+  width: min(100%, 17rem);
+  margin-inline: auto;
+}
+
+.booknook-illustration-book {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: booknook-book-bob 4.5s ease-in-out infinite;
+}
+
+.booknook-loading-book {
+  transform-origin: center;
+  animation: booknook-page-turn 1.8s ease-in-out infinite;
+}
+
+.booknook-empty-state {
+  background-image: radial-gradient(ellipse at 50% 0%, rgb(201 95 67 / 7%), transparent 55%);
+}
+
+.booknook-category-card {
+  background-image: linear-gradient(145deg, rgb(255 255 255 / 2%), transparent 60%);
+}
+
+@keyframes booknook-book-bob {
+  0%, 100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+}
+
+@keyframes booknook-page-turn {
+  0%, 100% {
+    transform: perspective(180px) rotateY(0);
+  }
+  45%, 55% {
+    transform: perspective(180px) rotateY(-12deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .booknook-float,
   .booknook-drift,
-  .booknook-ink-bloom,
-  .booknook-pen-icon {
+  .booknook-hero-blob::before,
+  .booknook-pen-icon,
+  .booknook-rise-in {
+    animation: none;
+  }
+
+  .booknook-action,
+  .booknook-action:hover,
+  .booknook-book-card,
+  .booknook-book-card:hover,
+  .booknook-cover::after,
+  .booknook-community-orb,
+  .booknook-detail-cover,
+  .booknook-detail-cover:hover,
+  .booknook-illustration-book,
+  .booknook-loading-book {
+    transition: none;
     animation: none;
   }
 
   .booknook-action,
   .booknook-action:hover {
-    transition: none;
     background-position: -140% 0;
   }
 }
@@ -348,4 +538,82 @@
 .booknook-hero-swiper .swiper-pagination-bullet-active {
   background: #f0b78d;
   opacity: 1;
+}
+
+.booknook-footer {
+  isolation: isolate;
+}
+
+.booknook-footer-glow {
+  background: radial-gradient(circle, rgb(201 95 67 / 12%), transparent 68%);
+  filter: blur(16px);
+}
+
+.booknook-footer-scene {
+  background-image:
+    radial-gradient(ellipse at 50% 115%, rgb(201 95 67 / 10%), transparent 58%),
+    repeating-linear-gradient(135deg, transparent 0 17px, rgb(201 95 67 / 2%) 18px 19px);
+}
+
+.booknook-footer-scene::after {
+  position: absolute;
+  right: 1.5rem;
+  top: 1.25rem;
+  width: 3.5rem;
+  aspect-ratio: 1;
+  border: 1px solid rgb(201 95 67 / 16%);
+  border-radius: 50%;
+  content: "";
+}
+
+.booknook-footer-scene .booknook-people-scene {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.75rem;
+  filter: drop-shadow(0 8px 12px rgb(66 36 31 / 10%));
+}
+
+.booknook-footer-spark {
+  position: absolute;
+  z-index: 2;
+  width: 0.45rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--booknook-accent);
+  opacity: 0.75;
+  animation: booknook-footer-float 4s ease-in-out infinite;
+}
+
+.booknook-footer-spark-one {
+  left: 15%;
+  top: 38%;
+}
+
+.booknook-footer-spark-two {
+  right: 18%;
+  bottom: 20%;
+  width: 0.3rem;
+  animation-delay: -1.7s;
+}
+
+.booknook-footer-link:focus-visible,
+.booknook-footer a:focus-visible {
+  outline: 2px solid var(--booknook-accent);
+  outline-offset: 4px;
+}
+
+@keyframes booknook-footer-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-7px) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booknook-footer-spark {
+    animation: none;
+  }
 }

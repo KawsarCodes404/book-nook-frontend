@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast, Toaster } from "@/components/ui/toast";
+import { PageHeading } from "@/components/PageHeading";
 
 const categories = ["Fiction", "Science", "History", "Kids", "Others"];
 
@@ -135,19 +136,12 @@ export default function AddBookPage() {
     <main className="flex-1 bg-book-page text-book-text">
       <Toaster />
 
-      <section className="relative isolate overflow-hidden border-b border-book-border bg-book-surface px-6 py-10 text-center">
-        <div aria-hidden="true" className="booknook-header-glow pointer-events-none absolute -right-20 -top-28 -z-10 size-80 rounded-full" />
-        <p className="mb-2 text-[11px] font-semibold tracking-[0.24em] text-book-accent-text">PASS IT ON</p>
-        <h1 className="flex items-center justify-center gap-3 font-serif text-4xl font-bold">
-          Add a Book
-          <span className="flex size-10 items-center justify-center rounded-xl border border-book-border bg-book-page text-book-accent-text shadow-sm">
-            <PenLine className="booknook-pen-icon size-5" />
-          </span>
-        </h1>
-        <p className="mt-2 text-sm text-book-muted">
-          Put a book from your shelf into the library.
-        </p>
-      </section>
+      <PageHeading
+        eyebrow="PASS IT ON"
+        title="Add a Book"
+        description="Put a book from your shelf into the library."
+        icon={PenLine}
+      />
 
       <form
         onSubmit={handleAddBook}

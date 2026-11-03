@@ -1,8 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { BookOpen } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowUpRight, BookOpen, LogOut, UserRound } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { authClient } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,9 +12,6 @@ import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
-  PopoverDescription,
-  PopoverHeader,
-  PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
 
@@ -29,7 +27,34 @@ const privateLinks = [
 ];
 
 export function Navbar() {
+  return (
+    <Suspense fallback={<NavbarFallback />}>
+      <NavbarContent />
+    </Suspense>
+  );
+}
+
+function NavbarFallback() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-book-border bg-book-header/95 px-4 text-book-text shadow-sm shadow-black/5 backdrop-blur">
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-serif text-lg font-bold sm:text-xl"
+        >
+          <span className="flex size-9 items-center justify-center rounded-md bg-book-accent text-book-accent-ink">
+            <BookOpen className="size-5" />
+          </span>
+          BookNook
+        </Link>
+      </div>
+    </header>
+  );
+}
+
+function NavbarContent() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const links = user ? [...publicLinks, ...privateLinks] : publicLinks;
@@ -62,7 +87,8 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-book-muted transition-colors hover:text-book-accent-text"
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={`border-b py-1 transition-colors hover:text-book-accent-text ${pathname === link.href ? "border-book-accent font-semibold text-book-accent-text" : "border-transparent text-book-muted"}`}
               >
                 {link.label}
               </Link>
@@ -75,7 +101,7 @@ export function Navbar() {
               <Popover>
                 <PopoverTrigger
                   aria-label="Open account menu"
-                  className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-book-accent"
+                  className="rounded-full transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-book-accent focus-visible:ring-offset-2 focus-visible:ring-offset-book-header"
                 >
                   <Avatar className="size-9">
                     <AvatarImage
@@ -87,27 +113,59 @@ export function Navbar() {
                     </AvatarFallback>
                   </Avatar>
                 </PopoverTrigger>
-                <PopoverContent className="w-56">
-                  <PopoverHeader>
-                    <PopoverTitle className="break-words">
-                      {user.name}
-                    </PopoverTitle>
-                    <PopoverDescription className="break-all">
-                      {user.email}
-                    </PopoverDescription>
-                  </PopoverHeader>
+                <PopoverContent
+                  align="end"
+                  sideOffset={12}
+                  className="w-[min(20rem,calc(100vw-1.5rem))] gap-2 rounded-2xl border border-book-border bg-book-surface p-2.5 text-book-text shadow-xl shadow-black/15"
+                >
+                  <div className="rounded-xl border border-book-border bg-book-page p-3.5">
+                    <div className="mb-3 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-book-accent-text">
+                      <span className="size-1.5 rounded-full bg-book-accent" />
+                      Signed in to BookNook
+                    </div>
+
+                    <div className="flex min-w-0 items-center gap-3">
+                      <Avatar className="size-11 shrink-0 ring-2 ring-book-accent/25 ring-offset-2 ring-offset-book-page">
+                        <AvatarImage
+                          src={user.image ?? undefined}
+                          referrerPolicy="no-referrer"
+                        />
+                        <AvatarFallback className="bg-book-accent text-book-accent-ink">
+                          {user.name?.charAt(0) ?? "U"}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="min-w-0">
+                        <p className="break-words text-sm font-semibold leading-5">
+                          {user.name || "BookNook reader"}
+                        </p>
+                        <p className="mt-0.5 break-all text-xs leading-4 text-book-muted">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <Link
                     href="/profile"
-                    className="py-2 text-sm hover:underline"
+                    className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-3 text-sm font-medium transition-colors hover:border-book-border hover:bg-book-page"
                   >
-                    My Profile
+                    <span className="flex items-center gap-2.5">
+                      <UserRound className="size-4 text-book-accent-text" />
+                      My Profile
+                    </span>
+                    <ArrowUpRight className="size-4 text-book-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
+
+                  <div className="h-px bg-book-border" />
+
                   <Button
                     type="button"
-                    className="w-full"
-                    variant="destructive"
+                    className="h-10 w-full justify-start gap-2.5 rounded-xl px-3 text-red-600 hover:bg-red-500/10 hover:text-red-600 dark:text-red-300 dark:hover:text-red-300"
+                    variant="ghost"
                     onClick={handleLogout}
                   >
+                    <LogOut className="size-4" />
                     Logout
                   </Button>
                 </PopoverContent>
@@ -145,7 +203,8 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="shrink-0 text-book-muted transition-colors hover:text-book-accent-text"
+              aria-current={pathname === link.href ? "page" : undefined}
+              className={`shrink-0 border-b py-1 transition-colors hover:text-book-accent-text ${pathname === link.href ? "border-book-accent font-semibold text-book-accent-text" : "border-transparent text-book-muted"}`}
             >
               {link.label}
             </Link>

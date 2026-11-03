@@ -1,15 +1,19 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import {
   ArrowRight,
+  Atom,
   BookOpen,
   Compass,
   HeartHandshake,
-  LibraryBig,
+  Landmark,
+  Smile,
 } from "lucide-react";
 
 import { HomeHero } from "@/components/HomeHero";
-import { BookImage } from "@/components/BookImage";
+import { BookCard } from "@/components/BookCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { BookShareIllustration } from "@/components/BookShareIllustration";
 import type { Book } from "@/lib/books";
 
 export const metadata = {
@@ -33,8 +37,86 @@ async function getLatestBooks(): Promise<Book[]> {
   }
 }
 
-export default async function Home() {
+async function NewArrivals() {
   const latestBooks = await getLatestBooks();
+
+  return (
+    <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+      <div className="mb-9 text-center">
+        <p className="text-xs font-semibold tracking-[0.2em] text-book-accent-text">
+          FRESH ON THE SHELF
+        </p>
+        <h2 className="mt-2 font-serif text-3xl font-bold">New Arrivals</h2>
+        <p className="mt-2 text-sm text-book-muted">
+          The latest books added by our readers.
+        </p>
+      </div>
+
+      {latestBooks.length === 0 ? (
+        <div className="booknook-empty-state rounded-2xl border border-dashed border-book-border-strong bg-book-surface px-6 py-10 text-center">
+          <BookShareIllustration compact />
+          <p className="mt-4 font-serif text-xl font-semibold">
+            The first story starts with you.
+          </p>
+          <p className="mt-2 text-sm text-book-muted">
+            Add a book to give this neighbourhood shelf its first title.
+          </p>
+        </div>
+      ) : (
+        <div
+          className={
+            latestBooks.length <= 3
+              ? "grid grid-cols-[repeat(auto-fit,minmax(min(100%,17rem),19rem))] justify-center gap-6 lg:gap-7"
+              : "grid grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-6 xl:grid-cols-4"
+          }
+        >
+          {latestBooks.map((book, index) => (
+            <ScrollReveal
+              key={book._id}
+              delay={Math.min(index, 4) * 0.06}
+              className="h-full"
+            >
+              <BookCard book={book} priority={index === 0} />
+            </ScrollReveal>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-8 text-center">
+        <Link
+          href="/books"
+          className="booknook-action inline-flex items-center gap-2 rounded-md border border-book-border-strong px-4 py-2 text-sm hover:bg-book-surface"
+        >
+          See All Books
+          <ArrowRight className="size-4" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function NewArrivalsLoading() {
+  return (
+    <section className="mx-auto min-h-[38rem] max-w-7xl px-6 py-16 lg:px-8">
+      <div className="mb-9 text-center">
+        <h2 className="font-serif text-3xl font-bold">New Arrivals</h2>
+        <p role="status" className="mt-2 text-sm text-book-muted">
+          Finding the latest books for the shelf…
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div
+            key={index}
+            className="aspect-[3/5] animate-pulse rounded-2xl border border-book-border bg-book-surface"
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default function Home() {
 
   const borrowingSteps = [
     {
@@ -58,92 +140,18 @@ export default async function Home() {
   ];
 
   const topCategories = [
-    { name: "Fiction", text: "Novels and short stories" },
-    { name: "Science", text: "How the world works" },
-    { name: "History", text: "Stories from the past" },
-    { name: "Kids", text: "Picture books and more" },
+    { name: "Fiction", text: "Novels and short stories", icon: BookOpen },
+    { name: "Science", text: "How the world works", icon: Atom },
+    { name: "History", text: "Stories from the past", icon: Landmark },
+    { name: "Kids", text: "Picture books and more", icon: Smile },
   ];
 
   return (
     <main className="flex-1 bg-book-page text-book-text">
       <HomeHero />
-
-      <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <div className="mb-9 text-center">
-          <p className="text-xs font-semibold tracking-[0.2em] text-book-accent-text">
-            FRESH ON THE SHELF
-          </p>
-          <h2 className="mt-2 font-serif text-3xl font-bold">New Arrivals</h2>
-          <p className="mt-2 text-sm text-book-muted">
-            The latest books added by our readers.
-          </p>
-        </div>
-
-        {latestBooks.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-book-border-strong p-10 text-center text-book-muted">
-            The shelf is waiting for its first books. Be the first to add one.
-          </p>
-        ) : (
-          <div
-            className={
-              latestBooks.length <= 3
-                ? "flex flex-wrap justify-center gap-5"
-                : "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6"
-            }
-          >
-            {latestBooks.map((book, index) => (
-              <ScrollReveal
-                key={book._id}
-                delay={index * 0.06}
-                className={
-                  latestBooks.length <= 3 ? "w-full max-w-[250px]" : ""
-                }
-              >
-                <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-book-border bg-book-surface shadow-sm shadow-black/5 transition duration-300 hover:-translate-y-1 hover:border-book-border-hover hover:shadow-lg">
-                  <div className="relative aspect-[3/4] bg-book-input">
-                    <BookImage
-                      src={book.image}
-                      alt={`${book.title} cover`}
-                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 28vw, 16vw"
-                      priority={index === 0}
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.035]"
-                    />
-                  </div>
-
-                  <div className="flex flex-1 flex-col p-3">
-                    <span className="rounded bg-book-input px-2 py-1 text-[10px] text-book-chip-text">
-                      {book.category}
-                    </span>
-                    <h3 className="mt-2 line-clamp-2 min-h-10 font-serif text-sm font-semibold">
-                      {book.title}
-                    </h3>
-                    <p className="mt-1 truncate text-xs text-book-muted">
-                      by {book.author}
-                    </p>
-
-                    <Link
-                      href={`/books/${book._id}`}
-                      className="booknook-action mt-auto flex w-full justify-center rounded-md bg-book-accent px-2 py-2 text-xs font-semibold text-book-accent-ink hover:bg-book-accent-hover"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </article>
-              </ScrollReveal>
-            ))}
-          </div>
-        )}
-
-        <div className="mt-8 text-center">
-          <Link
-            href="/books"
-            className="booknook-action inline-flex items-center gap-2 rounded-md border border-book-border-strong px-4 py-2 text-sm hover:bg-book-surface"
-          >
-            See All Books
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
-      </section>
+      <Suspense fallback={<NewArrivalsLoading />}>
+        <NewArrivals />
+      </Suspense>
 
       <section className="border-y border-book-border bg-book-surface px-6 py-16 lg:px-8">
         <div className="mx-auto max-w-7xl">
@@ -177,6 +185,35 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="booknook-community-band relative isolate overflow-hidden border-b border-book-border px-6 py-16 lg:px-8">
+        <div className="booknook-community-orb booknook-drift" aria-hidden="true" />
+
+        <div className="relative mx-auto grid max-w-7xl items-center gap-8 md:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <ScrollReveal>
+            <p className="text-xs font-semibold tracking-[0.2em] text-book-accent-text">
+              GOOD STORIES KEEP MOVING
+            </p>
+            <h2 className="mt-3 max-w-xl font-serif text-3xl font-bold leading-tight sm:text-4xl">
+              Your next favourite book might be just around the corner.
+            </h2>
+            <p className="mt-4 max-w-lg text-sm leading-7 text-book-muted sm:text-base">
+              Discover what your neighbours are reading, then pass a story on
+              when you are ready. Every shared book makes the shelf a little
+              more local.
+            </p>
+            <Link
+              href="/books"
+              className="booknook-action group mt-7 inline-flex items-center gap-2 rounded-full bg-book-accent px-5 py-3 text-sm font-semibold text-book-accent-ink"
+            >
+              Explore the shelf
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </ScrollReveal>
+
+          <BookShareIllustration />
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="mb-9 text-center">
           <h2 className="font-serif text-3xl font-bold">Top Categories</h2>
@@ -186,17 +223,19 @@ export default async function Home() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {topCategories.map((category) => (
-            <ScrollReveal key={category.name} delay={0.05}>
+          {topCategories.map(({ name, text, icon: Icon }) => (
+            <ScrollReveal key={name} delay={0.05}>
               <Link
-                href={`/books?category=${category.name}`}
-                className="block rounded-xl border border-book-border bg-book-surface p-6 text-center transition duration-300 hover:-translate-y-1 hover:border-book-accent hover:shadow-md"
+                href={`/books?category=${name}`}
+                className="booknook-category-card group block rounded-2xl border border-book-border bg-book-surface p-6 text-center transition duration-300 hover:-translate-y-1 hover:border-book-accent hover:shadow-lg"
               >
-                <LibraryBig className="mx-auto size-6 text-book-accent-text" />
+                <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-book-deep text-book-accent-text transition-transform duration-300 group-hover:rotate-[-6deg] group-hover:scale-110">
+                  <Icon className="size-5" />
+                </span>
                 <h3 className="mt-3 font-serif text-lg font-semibold">
-                  {category.name}
+                  {name}
                 </h3>
-                <p className="mt-1 text-xs text-book-muted">{category.text}</p>
+                <p className="mt-1 text-xs text-book-muted">{text}</p>
               </Link>
             </ScrollReveal>
           ))}

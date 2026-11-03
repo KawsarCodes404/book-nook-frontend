@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 import { BookImage } from "@/components/BookImage";
+import { BookShareIllustration } from "@/components/BookShareIllustration";
 import type { Borrow } from "@/lib/books";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { Button } from "@/components/ui/button";
@@ -88,9 +90,22 @@ export function MyBorrowsList({
       )}
 
       {borrows.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-book-border-strong p-12 text-center text-book-muted">
-          You have no borrowed books right now.
-        </p>
+        <div className="booknook-empty-state rounded-2xl border border-dashed border-book-border-strong bg-book-surface px-6 py-10 text-center sm:px-10">
+          <BookShareIllustration compact />
+          <h2 className="mt-4 font-serif text-2xl font-semibold">
+            A good read is waiting for you.
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-book-muted">
+            Your borrowed shelf is empty. Find a book nearby and bring home a
+            new story.
+          </p>
+          <Link
+            href="/books"
+            className="booknook-action mt-5 inline-flex rounded-full bg-book-accent px-5 py-3 text-sm font-semibold text-book-accent-ink"
+          >
+            Browse books
+          </Link>
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-book-border">
           <table className="w-full min-w-[700px] text-left text-sm">

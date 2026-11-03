@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { connection } from "next/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { MyBorrowsList } from "@/components/MyBorrowsList";
+import { PageHeading } from "@/components/PageHeading";
 import type { Borrow } from "@/lib/books";
 import { auth } from "@/lib/auth";
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
@@ -12,7 +14,7 @@ export const metadata: Metadata = {
   title: "BookNook | My Borrows",
 };
 
-export default async function MyBorrowsPage() {
+async function MyBorrowsContent() {
   await connection();
 
   const session = await auth.api.getSession({
@@ -25,27 +27,52 @@ export default async function MyBorrowsPage() {
 
   const token = await getTokenFromServer();
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/borrows`, {
-    cache: "no-store",
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  });
+  let borrows: Borrow[] = [];
 
-  const result = await response.json();
-  const borrows: Borrow[] = response.ok ? result : [];
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/borrows`, {
+      cache: "no-store",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      borrows = Array.isArray(result) ? result : [];
+    }
+  } catch {
+    borrows = [];
+  }
+
+  return <MyBorrowsList borrows={borrows} />;
+}
+
+function MyBorrowsLoading() {
+  return (
+    <div
+      role="status"
+      className="rounded-2xl border border-dashed border-book-border-strong bg-book-surface px-6 py-12 text-center text-book-muted"
+    >
+      Loading your borrowed books…
+    </div>
+  );
+}
+
+export default function MyBorrowsPage() {
 
   return (
     <main className="min-h-[60vh] flex-1 bg-book-page text-book-text">
-      <section className="border-b border-book-border bg-book-surface px-6 py-10 text-center">
-        <h1 className="font-serif text-4xl font-bold">My Borrows</h1>
-        <p className="mt-2 text-sm text-book-muted">
-          Books you are reading right now.
-        </p>
-      </section>
+      <PageHeading
+        eyebrow="CURRENTLY READING"
+        title="My Borrows"
+        description="Your borrowed stories, with return dates all in one place."
+      />
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <MyBorrowsList borrows={borrows} />
+        <Suspense fallback={<MyBorrowsLoading />}>
+          <MyBorrowsContent />
+        </Suspense>
       </section>
     </main>
   );
