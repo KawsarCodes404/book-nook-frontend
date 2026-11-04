@@ -31,7 +31,13 @@ async function getLatestBooks(): Promise<Book[]> {
 
     if (!response.ok) return [];
 
-    return response.json();
+    const books: Book[] = await response.json();
+
+    return books.sort(
+      (firstBook, secondBook) =>
+        new Date(secondBook.addedAt).getTime() -
+        new Date(firstBook.addedAt).getTime(),
+    );
   } catch {
     return [];
   }
