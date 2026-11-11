@@ -28,14 +28,29 @@ export default function AddBookPage() {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
     if (!apiKey) {
-      setMessage(
-        "Image upload needs NEXT_PUBLIC_IMGBB_API_KEY. You can paste a hosted image URL below instead.",
-      );
+      const errorText = "Image upload is not configured. Add an ImgBB API key and try again.";
+      setMessage(errorText);
+      toast.add({ type: "error", title: "Image upload unavailable", description: errorText });
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      const errorText = "Choose an image file to upload.";
+      setMessage(errorText);
+      toast.add({ type: "error", title: "Invalid image", description: errorText });
+      return;
+    }
+
+    if (file.size > 32 * 1024 * 1024) {
+      const errorText = "The image must be 32 MB or smaller.";
+      setMessage(errorText);
+      toast.add({ type: "error", title: "Image is too large", description: errorText });
       return;
     }
 
     setIsUploading(true);
     setMessage("");
+    setImageUrl("");
 
     try {
       const formData = new FormData();
@@ -55,7 +70,12 @@ export default function AddBookPage() {
         throw new Error(result.error?.message || "Image upload failed.");
       }
 
-      setImageUrl(result.data.url);
+      setImageUrl(result.data.display_url || result.data.url);
+      toast.add({
+        type: "success",
+        title: "Image uploaded",
+        description: "Your book image is ready to save.",
+      });
     } catch (error) {
       const errorText =
         error instanceof Error ? error.message : "Image upload failed.";
@@ -79,10 +99,28 @@ export default function AddBookPage() {
     const form = event.currentTarget;
     const formData = new FormData(form);
 
+    if (!imageUrl) {
+      const errorText = "Upload the book image before adding the book.";
+      setMessage(errorText);
+      toast.add({ type: "error", title: "Book image required", description: errorText });
+      return;
+    }
+
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      const errorText = "The book service is not configured. Please try again later.";
+      setMessage(errorText);
+      toast.add({ type: "error", title: "Could not add book", description: errorText });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const token = await getTokenFromClient();
+
+      if (!token) {
+        throw new Error("Your session expired. Please sign in again.");
+      }
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
         method: "POST",
@@ -91,16 +129,16 @@ export default function AddBookPage() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: formData.get("title"),
-          author: formData.get("author"),
-          category: formData.get("category"),
+          title: String(formData.get("title") ?? "").trim(),
+          author: String(formData.get("author") ?? "").trim(),
+          category: String(formData.get("category") ?? ""),
           image: imageUrl,
-          description: formData.get("description"),
-          totalCopies: formData.get("totalCopies"),
+          description: String(formData.get("description") ?? "").trim(),
+          totalCopies: Number(formData.get("totalCopies")),
         }),
       });
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         throw new Error(result.message || "Could not add this book.");
@@ -201,20 +239,9 @@ export default function AddBookPage() {
             {isUploading
               ? "Uploading image…"
               : imageUrl
-                ? "Image uploaded successfully."
-                : "Upload with ImgBB or paste an image URL below."}
+                ? "Image uploaded successfully to ImgBB."
+                : "Upload the book cover with ImgBB before adding the book."}
           </p>
-
-          <Label htmlFor="imageUrl">Image URL</Label>
-          <Input
-            id="imageUrl"
-            type="url"
-            value={imageUrl}
-            onChange={(event) => setImageUrl(event.target.value)}
-            placeholder="https://example.com/book-cover.jpg"
-            required
-            className={inputClass}
-          />
         </div>
 
         <div className="grid gap-2 sm:col-span-2">
